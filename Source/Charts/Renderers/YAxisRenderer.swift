@@ -169,6 +169,11 @@ open class YAxisRenderer: AxisRendererBase
             return
         }
         
+        if yAxis.drawRiskLeveAreaEnabled {
+            // draw RiskLeveArea
+            drawRiskLeveArea(context: context)
+        }
+        
         if yAxis.drawGridLinesEnabled
         {
             let positions = transformedPositions()
@@ -201,6 +206,150 @@ open class YAxisRenderer: AxisRendererBase
             // draw zero line
             drawZeroLine(context: context)
         }
+    }
+    
+    /// Draws the RiskLeveArea.
+    @objc open func drawRiskLeveArea(context: CGContext)
+    {
+        guard
+            let yAxis = self.axis as? YAxis,
+            let transformer = self.transformer
+            else { return }
+        
+//        let positions = transformedPositions()
+        
+        if let yMinValue = yAxis.entries.first, let yMaxValue = yAxis.entries.last {
+
+            // 分界点
+            let pixel_20 = CGPoint(x: 0.0, y: 20).applying(transformer.valueToPixelMatrix)// value > 20 优秀区
+            let pixel_13 = CGPoint(x: 0.0, y: 13).applying(transformer.valueToPixelMatrix)// 13 < value < 20 良好区
+            let pixel_6_5 = CGPoint(x: 0.0, y: 6.5).applying(transformer.valueToPixelMatrix)// 6.5 < value < 13 良好区
+            let pixel_2_5 = CGPoint(x: 0.0, y: 2.5).applying(transformer.valueToPixelMatrix)// 2.5 < value < 6.5 较差区 && value < 20 危险区
+            
+            if yMinValue >= 20.0 {// value > 20 ，优秀区
+                drawRiskArea_LevelA(context: context, y: viewPortHandler.contentTop, height: viewPortHandler.contentBottom - viewPortHandler.contentTop)
+            } else if yMinValue >= 13.0 {// 13 < value < 20，良好区
+                if yMaxValue >= 20 {
+                    drawRiskArea_LevelA(context: context, y: viewPortHandler.contentTop, height: pixel_20.y - viewPortHandler.contentTop)
+                    drawRiskArea_LevelB(context: context, y: pixel_20.y, height: viewPortHandler.contentBottom - pixel_20.y)
+                } else {
+                    drawRiskArea_LevelB(context: context, y: viewPortHandler.contentTop, height: viewPortHandler.contentBottom - viewPortHandler.contentTop)
+                }
+            } else if yMinValue >= 6.5 {//平庸区：FFDD26
+                if yMaxValue >= 20 {
+                    drawRiskArea_LevelA(context: context, y: viewPortHandler.contentTop, height: pixel_20.y - viewPortHandler.contentTop)
+                    drawRiskArea_LevelB(context: context, y: pixel_20.y, height: pixel_13.y - pixel_20.y)
+                    drawRiskArea_LevelC(context: context, y: pixel_13.y, height: viewPortHandler.contentBottom - pixel_13.y)
+                } else if yMaxValue >= 13 {
+                    drawRiskArea_LevelB(context: context, y: viewPortHandler.contentTop, height: pixel_13.y - viewPortHandler.contentTop)
+                    drawRiskArea_LevelC(context: context, y: pixel_13.y, height: viewPortHandler.contentBottom - pixel_13.y)
+                } else {
+                    drawRiskArea_LevelC(context: context, y: viewPortHandler.contentTop, height: viewPortHandler.contentBottom - viewPortHandler.contentTop)
+                }
+            } else if yMinValue >= 2.5 {//较差区：E67E22
+                if yMaxValue >= 20 {
+                    drawRiskArea_LevelA(context: context, y: viewPortHandler.contentTop, height: pixel_20.y - viewPortHandler.contentTop)
+                    drawRiskArea_LevelB(context: context, y: pixel_20.y, height: pixel_13.y - pixel_20.y)
+                    drawRiskArea_LevelC(context: context, y: pixel_13.y, height: pixel_6_5.y - pixel_13.y)
+                    drawRiskArea_LevelD(context: context, y: pixel_6_5.y, height: viewPortHandler.contentBottom - pixel_6_5.y)
+                } else if yMaxValue >= 13 {
+                    drawRiskArea_LevelB(context: context, y: viewPortHandler.contentTop, height: pixel_13.y - viewPortHandler.contentTop)
+                    drawRiskArea_LevelC(context: context, y: pixel_13.y, height: pixel_6_5.y - pixel_13.y)
+                    drawRiskArea_LevelD(context: context, y: pixel_6_5.y, height: viewPortHandler.contentBottom - pixel_6_5.y)
+                } else if yMaxValue >= 6.5 {
+                    drawRiskArea_LevelC(context: context, y: viewPortHandler.contentTop, height: pixel_6_5.y - viewPortHandler.contentTop)
+                    drawRiskArea_LevelD(context: context, y: pixel_6_5.y, height: viewPortHandler.contentBottom - pixel_6_5.y)
+                } else {
+                    drawRiskArea_LevelD(context: context, y: viewPortHandler.contentTop, height: viewPortHandler.contentBottom - viewPortHandler.contentTop)
+                }
+            } else {//危险区：CE2029
+                if yMaxValue >= 20 {
+                    drawRiskArea_LevelA(context: context, y: viewPortHandler.contentTop, height: pixel_20.y - viewPortHandler.contentTop)
+                    drawRiskArea_LevelB(context: context, y: pixel_20.y, height: pixel_13.y - pixel_20.y)
+                    drawRiskArea_LevelC(context: context, y: pixel_13.y, height: pixel_6_5.y - pixel_13.y)
+                    drawRiskArea_LevelD(context: context, y: pixel_6_5.y, height: pixel_2_5.y - pixel_6_5.y)
+                    drawRiskArea_LevelE(context: context, y: pixel_2_5.y, height: viewPortHandler.contentBottom - pixel_2_5.y)
+                } else if yMaxValue >= 13 {
+                    drawRiskArea_LevelB(context: context, y: viewPortHandler.contentTop, height: pixel_13.y - viewPortHandler.contentTop)
+                    drawRiskArea_LevelC(context: context, y: pixel_13.y, height: pixel_6_5.y - pixel_13.y)
+                    drawRiskArea_LevelD(context: context, y: pixel_6_5.y, height: pixel_2_5.y - pixel_6_5.y)
+                    drawRiskArea_LevelE(context: context, y: pixel_2_5.y, height: viewPortHandler.contentBottom - pixel_2_5.y)
+                } else if yMaxValue >= 6.5 {
+                    drawRiskArea_LevelC(context: context, y: viewPortHandler.contentTop, height: pixel_6_5.y - viewPortHandler.contentTop)
+                    drawRiskArea_LevelD(context: context, y: pixel_6_5.y, height: pixel_2_5.y - pixel_6_5.y)
+                    drawRiskArea_LevelE(context: context, y: pixel_2_5.y, height: viewPortHandler.contentBottom - pixel_2_5.y)
+                } else if yMaxValue >= 2.5 {
+                    drawRiskArea_LevelD(context: context, y: viewPortHandler.contentTop, height: pixel_2_5.y - viewPortHandler.contentTop)
+                    drawRiskArea_LevelE(context: context, y: pixel_2_5.y, height: viewPortHandler.contentBottom - pixel_2_5.y)
+                } else {
+                    drawRiskArea_LevelE(context: context, y: viewPortHandler.contentTop, height: viewPortHandler.contentBottom - viewPortHandler.contentTop)
+                }
+            }
+        }
+        
+    }
+    
+    // draw 5  risk level area
+    func drawRiskArea_LevelA(context: CGContext, y : CGFloat, height : CGFloat) {
+        let rect = CGRect(x: viewPortHandler.contentLeft, y: y, width: viewPortHandler.contentRight - viewPortHandler.contentLeft, height: height)
+        drawUnitRiskAreaWithRect(context: context, rect: rect, string: "优秀区", rgbHexValue: 0x2ECC71)
+    }
+    
+    func drawRiskArea_LevelB(context: CGContext, y : CGFloat, height : CGFloat) {
+        let rect = CGRect(x: viewPortHandler.contentLeft, y: y, width: viewPortHandler.contentRight - viewPortHandler.contentLeft, height: height)
+        drawUnitRiskAreaWithRect(context: context, rect: rect, string: "良好区", rgbHexValue: 0x3498DB)
+    }
+    
+    func drawRiskArea_LevelC(context: CGContext, y : CGFloat, height : CGFloat) {
+        let rect = CGRect(x: viewPortHandler.contentLeft, y: y, width: viewPortHandler.contentRight - viewPortHandler.contentLeft, height: height)
+        drawUnitRiskAreaWithRect(context: context, rect: rect, string: "平庸区", rgbHexValue: 0xFFDD26)
+    }
+    
+    func drawRiskArea_LevelD(context: CGContext, y : CGFloat, height : CGFloat) {
+        let rect = CGRect(x: viewPortHandler.contentLeft, y: y, width: viewPortHandler.contentRight - viewPortHandler.contentLeft, height: height)
+        drawUnitRiskAreaWithRect(context: context, rect: rect, string: "较差区", rgbHexValue: 0xE67E22)
+    }
+    
+    func drawRiskArea_LevelE(context: CGContext, y : CGFloat, height : CGFloat) {
+        let rect = CGRect(x: viewPortHandler.contentLeft, y: y, width: viewPortHandler.contentRight - viewPortHandler.contentLeft, height: height)
+        drawUnitRiskAreaWithRect(context: context, rect: rect, string: "危险区", rgbHexValue: 0xCE2029)
+    }
+    
+    // draw unit risklevel
+    func drawUnitRiskAreaWithRect(context: CGContext, rect : CGRect, string: String, rgbHexValue:UInt32) {
+        let color = colorByHex(rgbHexValue: rgbHexValue, alpha: 0.4);
+        context.setFillColor(color.cgColor)
+        context.addRect(rect)
+        context.drawPath(using: .fill)
+        
+        drawRotatedText(string, at: CGPoint(x: viewPortHandler.contentRight * 0.2, y: rect.origin.y + rect.size.height / 2.0), angle: -30, font: UIFont(name: "HelveticaNeue-Bold", size: 14)!, color: colorByHex(rgbHexValue: 0x000000, alpha: 0.14))
+        drawRotatedText(string, at: CGPoint(x: viewPortHandler.contentRight / 2.0, y: rect.origin.y + rect.size.height / 2.0), angle: -30, font: UIFont(name: "HelveticaNeue-Bold", size: 14)!, color: colorByHex(rgbHexValue: 0x000000, alpha: 0.14))
+        drawRotatedText(string, at: CGPoint(x: viewPortHandler.contentRight * 0.8, y: rect.origin.y + rect.size.height / 2.0), angle: -30, font: UIFont(name: "HelveticaNeue-Bold", size: 14)!, color: colorByHex(rgbHexValue: 0x000000, alpha: 0.14))
+    }
+    
+    // hex color
+    func colorByHex(rgbHexValue:UInt32, alpha:Double = 1.0) -> UIColor {
+        let red = Double((rgbHexValue & 0xFF0000) >> 16) / 256.0
+        let green = Double((rgbHexValue & 0xFF00) >> 8) / 256.0
+        let blue = Double((rgbHexValue & 0xFF)) / 256.0
+
+        return UIColor(red: CGFloat(red), green: CGFloat(green), blue: CGFloat(blue), alpha: CGFloat(alpha))
+    }
+    
+    // draw Rotated Text
+    func drawRotatedText(_ text: String, at p: CGPoint, angle: CGFloat, font: UIFont, color: UIColor) {
+        // Draw text centered on the point, rotated by an angle in degrees moving clockwise.
+        let attrs = [NSAttributedString.Key.font: font, NSAttributedString.Key.foregroundColor: color]
+        let textSize = text.size(withAttributes: attrs)
+        let c = UIGraphicsGetCurrentContext()!
+        c.saveGState()
+        // Translate the origin to the drawing location and rotate the coordinate system.
+        c.translateBy(x: p.x, y: p.y)
+        c.rotate(by: angle * .pi / 180)
+        // Draw the text centered at the point.
+        text.draw(at: CGPoint(x: -textSize.width / 2, y: -textSize.height / 2), withAttributes: attrs)
+        // Restore the original coordinate system.
+        c.restoreGState()
     }
     
     @objc open var gridClippingRect: CGRect

@@ -54,6 +54,9 @@ open class YAxis: AxisBase
     /// flag that indicates if the zero-line should be drawn regardless of other grid lines
     @objc open var drawZeroLineEnabled = false
     
+    /// Draw the risk level background color
+    @objc open var drawRiskLeveAreaEnabled = false
+    
     /// Color of the zero line
     @objc open var zeroLineColor: NSUIColor? = NSUIColor.gray
     
