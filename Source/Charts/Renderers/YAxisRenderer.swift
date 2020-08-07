@@ -216,103 +216,67 @@ open class YAxisRenderer: AxisRendererBase
             let transformer = self.transformer
             else { return }
         
-//        let positions = transformedPositions()
+        // 要找出的范围
+        var targetRange = [NSDictionary]()//数据落到的目标范围
         
-        if let yMinValue = yAxis.entries.first, let yMaxValue = yAxis.entries.last {
-
-            // 分界点
-            let pixel_20 = CGPoint(x: 0.0, y: 20).applying(transformer.valueToPixelMatrix)// value > 20 优秀区
-            let pixel_13 = CGPoint(x: 0.0, y: 13).applying(transformer.valueToPixelMatrix)// 13 < value < 20 良好区
-            let pixel_6_5 = CGPoint(x: 0.0, y: 6.5).applying(transformer.valueToPixelMatrix)// 6.5 < value < 13 良好区
-            let pixel_2_5 = CGPoint(x: 0.0, y: 2.5).applying(transformer.valueToPixelMatrix)// 2.5 < value < 6.5 较差区 && value < 20 危险区
-            
-            if yMinValue >= 20.0 {// value > 20 ，优秀区
-                drawRiskArea_LevelA(context: context, y: viewPortHandler.contentTop, height: viewPortHandler.contentBottom - viewPortHandler.contentTop)
-            } else if yMinValue >= 13.0 {// 13 < value < 20，良好区
-                if yMaxValue >= 20 {
-                    drawRiskArea_LevelA(context: context, y: viewPortHandler.contentTop, height: pixel_20.y - viewPortHandler.contentTop)
-                    drawRiskArea_LevelB(context: context, y: pixel_20.y, height: viewPortHandler.contentBottom - pixel_20.y)
-                } else {
-                    drawRiskArea_LevelB(context: context, y: viewPortHandler.contentTop, height: viewPortHandler.contentBottom - viewPortHandler.contentTop)
-                }
-            } else if yMinValue >= 6.5 {//平庸区：FFDD26
-                if yMaxValue >= 20 {
-                    drawRiskArea_LevelA(context: context, y: viewPortHandler.contentTop, height: pixel_20.y - viewPortHandler.contentTop)
-                    drawRiskArea_LevelB(context: context, y: pixel_20.y, height: pixel_13.y - pixel_20.y)
-                    drawRiskArea_LevelC(context: context, y: pixel_13.y, height: viewPortHandler.contentBottom - pixel_13.y)
-                } else if yMaxValue >= 13 {
-                    drawRiskArea_LevelB(context: context, y: viewPortHandler.contentTop, height: pixel_13.y - viewPortHandler.contentTop)
-                    drawRiskArea_LevelC(context: context, y: pixel_13.y, height: viewPortHandler.contentBottom - pixel_13.y)
-                } else {
-                    drawRiskArea_LevelC(context: context, y: viewPortHandler.contentTop, height: viewPortHandler.contentBottom - viewPortHandler.contentTop)
-                }
-            } else if yMinValue >= 2.5 {//较差区：E67E22
-                if yMaxValue >= 20 {
-                    drawRiskArea_LevelA(context: context, y: viewPortHandler.contentTop, height: pixel_20.y - viewPortHandler.contentTop)
-                    drawRiskArea_LevelB(context: context, y: pixel_20.y, height: pixel_13.y - pixel_20.y)
-                    drawRiskArea_LevelC(context: context, y: pixel_13.y, height: pixel_6_5.y - pixel_13.y)
-                    drawRiskArea_LevelD(context: context, y: pixel_6_5.y, height: viewPortHandler.contentBottom - pixel_6_5.y)
-                } else if yMaxValue >= 13 {
-                    drawRiskArea_LevelB(context: context, y: viewPortHandler.contentTop, height: pixel_13.y - viewPortHandler.contentTop)
-                    drawRiskArea_LevelC(context: context, y: pixel_13.y, height: pixel_6_5.y - pixel_13.y)
-                    drawRiskArea_LevelD(context: context, y: pixel_6_5.y, height: viewPortHandler.contentBottom - pixel_6_5.y)
-                } else if yMaxValue >= 6.5 {
-                    drawRiskArea_LevelC(context: context, y: viewPortHandler.contentTop, height: pixel_6_5.y - viewPortHandler.contentTop)
-                    drawRiskArea_LevelD(context: context, y: pixel_6_5.y, height: viewPortHandler.contentBottom - pixel_6_5.y)
-                } else {
-                    drawRiskArea_LevelD(context: context, y: viewPortHandler.contentTop, height: viewPortHandler.contentBottom - viewPortHandler.contentTop)
-                }
-            } else {//危险区：CE2029
-                if yMaxValue >= 20 {
-                    drawRiskArea_LevelA(context: context, y: viewPortHandler.contentTop, height: pixel_20.y - viewPortHandler.contentTop)
-                    drawRiskArea_LevelB(context: context, y: pixel_20.y, height: pixel_13.y - pixel_20.y)
-                    drawRiskArea_LevelC(context: context, y: pixel_13.y, height: pixel_6_5.y - pixel_13.y)
-                    drawRiskArea_LevelD(context: context, y: pixel_6_5.y, height: pixel_2_5.y - pixel_6_5.y)
-                    drawRiskArea_LevelE(context: context, y: pixel_2_5.y, height: viewPortHandler.contentBottom - pixel_2_5.y)
-                } else if yMaxValue >= 13 {
-                    drawRiskArea_LevelB(context: context, y: viewPortHandler.contentTop, height: pixel_13.y - viewPortHandler.contentTop)
-                    drawRiskArea_LevelC(context: context, y: pixel_13.y, height: pixel_6_5.y - pixel_13.y)
-                    drawRiskArea_LevelD(context: context, y: pixel_6_5.y, height: pixel_2_5.y - pixel_6_5.y)
-                    drawRiskArea_LevelE(context: context, y: pixel_2_5.y, height: viewPortHandler.contentBottom - pixel_2_5.y)
-                } else if yMaxValue >= 6.5 {
-                    drawRiskArea_LevelC(context: context, y: viewPortHandler.contentTop, height: pixel_6_5.y - viewPortHandler.contentTop)
-                    drawRiskArea_LevelD(context: context, y: pixel_6_5.y, height: pixel_2_5.y - pixel_6_5.y)
-                    drawRiskArea_LevelE(context: context, y: pixel_2_5.y, height: viewPortHandler.contentBottom - pixel_2_5.y)
-                } else if yMaxValue >= 2.5 {
-                    drawRiskArea_LevelD(context: context, y: viewPortHandler.contentTop, height: pixel_2_5.y - viewPortHandler.contentTop)
-                    drawRiskArea_LevelE(context: context, y: pixel_2_5.y, height: viewPortHandler.contentBottom - pixel_2_5.y)
-                } else {
-                    drawRiskArea_LevelE(context: context, y: viewPortHandler.contentTop, height: viewPortHandler.contentBottom - viewPortHandler.contentTop)
-                }
+        //找出最低下限范围
+        for minRange in yAxis.riskLeveAreaArray {
+            let lower_limit = (minRange["left_closed"] as! NSString).doubleValue
+            if yAxis.leftAxis_ValueMin >= lower_limit {
+                rangeAreaArray.append(minRange)
+                break
+            } else {
+                rangeAreaArray.append(minRange)
             }
         }
         
+        //找最高上限范围
+        for maxRange in rangeAreaArray {
+            let upper_limit = (maxRange["left_closed"] as! NSString).doubleValue
+            if yAxis.leftAxis_ValueMax > upper_limit {
+                break
+            } else {
+                rangeAreaArray.removeFirst()
+            }
+        }
+        
+        //颜色数组
+        let colors = [0x2ECC71,0x3498DB,0xFFDD26,0xE67E22,0xCE2029]
+
+        let pixel_ZeroPoint = CGPoint(x: viewPortHandler.contentLeft, y: viewPortHandler.contentTop)// 顶点 0 点 的实际坐标
+        let pixel_MaxPoint = CGPoint(x: viewPortHandler.contentLeft, y: viewPortHandler.contentBottom)// 最底边 的实际坐标
+
+        for index in 0..<rangeAreaArray.count {
+            
+            var lastIndex = index - 1; if lastIndex == -1 { lastIndex = 0 }
+            let lase_closeValue = (rangeAreaArray[lastIndex]["left_closed"] as! NSString).doubleValue
+            
+            let closeValue = (rangeAreaArray[index]["left_closed"] as! NSString).doubleValue
+            let closeAreaName = rangeAreaArray[index]["areaName"] as! String
+            
+            let color = rangeAreaArray[index]["colorIndex"] as! String
+            let colorIndex = Int(color)!
+
+            // 分界点 左闭右开 ::: 20 ====> [20,+）
+            var pixel_lastPoint = CGPoint(x: 0.0, y: lase_closeValue).applying(transformer.valueToPixelMatrix)
+            var pixel_Point = CGPoint(x: 0.0, y: closeValue).applying(transformer.valueToPixelMatrix)
+            
+            if index == 0 {
+                pixel_lastPoint = pixel_ZeroPoint
+            }
+            
+            if index == (rangeAreaArray.count - 1) {
+                pixel_Point = pixel_MaxPoint
+            }
+            
+            drawRiskArea_LevelCustom(context: context, y: pixel_lastPoint.y, height: pixel_Point.y - pixel_lastPoint.y, string: closeAreaName, rgbHexValue: UInt32(colors[colorIndex]))
+        }
     }
     
-    // draw 5  risk level area
-    func drawRiskArea_LevelA(context: CGContext, y : CGFloat, height : CGFloat) {
+    // draw Custom  risk level area
+    func drawRiskArea_LevelCustom(context: CGContext, y : CGFloat, height : CGFloat, string: String, rgbHexValue:UInt32) {
         let rect = CGRect(x: viewPortHandler.contentLeft, y: y, width: viewPortHandler.contentRight - viewPortHandler.contentLeft, height: height)
-        drawUnitRiskAreaWithRect(context: context, rect: rect, string: "优秀区", rgbHexValue: 0x2ECC71)
-    }
-    
-    func drawRiskArea_LevelB(context: CGContext, y : CGFloat, height : CGFloat) {
-        let rect = CGRect(x: viewPortHandler.contentLeft, y: y, width: viewPortHandler.contentRight - viewPortHandler.contentLeft, height: height)
-        drawUnitRiskAreaWithRect(context: context, rect: rect, string: "良好区", rgbHexValue: 0x3498DB)
-    }
-    
-    func drawRiskArea_LevelC(context: CGContext, y : CGFloat, height : CGFloat) {
-        let rect = CGRect(x: viewPortHandler.contentLeft, y: y, width: viewPortHandler.contentRight - viewPortHandler.contentLeft, height: height)
-        drawUnitRiskAreaWithRect(context: context, rect: rect, string: "平庸区", rgbHexValue: 0xFFDD26)
-    }
-    
-    func drawRiskArea_LevelD(context: CGContext, y : CGFloat, height : CGFloat) {
-        let rect = CGRect(x: viewPortHandler.contentLeft, y: y, width: viewPortHandler.contentRight - viewPortHandler.contentLeft, height: height)
-        drawUnitRiskAreaWithRect(context: context, rect: rect, string: "较差区", rgbHexValue: 0xE67E22)
-    }
-    
-    func drawRiskArea_LevelE(context: CGContext, y : CGFloat, height : CGFloat) {
-        let rect = CGRect(x: viewPortHandler.contentLeft, y: y, width: viewPortHandler.contentRight - viewPortHandler.contentLeft, height: height)
-        drawUnitRiskAreaWithRect(context: context, rect: rect, string: "危险区", rgbHexValue: 0xCE2029)
+        drawUnitRiskAreaWithRect(context: context, rect: rect, string: string, rgbHexValue: rgbHexValue)
     }
     
     // draw unit risklevel

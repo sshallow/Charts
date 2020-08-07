@@ -57,6 +57,15 @@ open class YAxis: AxisBase
     /// Draw the risk level background color
     @objc open var drawRiskLeveAreaEnabled = false
     
+    /// Draw the risk level ranges and level name
+    @objc open var riskLeveAreaArray = [NSDictionary]()
+    
+    /// Y-max of provided data
+    @objc open var leftAxis_ValueMax = 0.0
+    
+    /// Y-min of provided data
+    @objc open var leftAxis_ValueMin = 0.0
+    
     /// Color of the zero line
     @objc open var zeroLineColor: NSUIColor? = NSUIColor.gray
     
@@ -153,6 +162,10 @@ open class YAxis: AxisBase
     
     open override func calculate(min dataMin: Double, max dataMax: Double)
     {
+        //set provide data y-max/y-min
+        leftAxis_ValueMax = dataMax
+        leftAxis_ValueMin = dataMin
+        
         // if custom, use value as is, else use data value
         var min = _customAxisMin ? _axisMinimum : dataMin
         var max = _customAxisMax ? _axisMaximum : dataMax
