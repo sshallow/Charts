@@ -223,20 +223,20 @@ open class YAxisRenderer: AxisRendererBase
         for minRange in yAxis.riskLeveAreaArray {
             let lower_limit = (minRange["left_closed"] as! NSString).doubleValue
             if yAxis.leftAxis_ValueMin >= lower_limit {
-                rangeAreaArray.append(minRange)
+                targetRange.append(minRange)
                 break
             } else {
-                rangeAreaArray.append(minRange)
+                targetRange.append(minRange)
             }
         }
         
         //找最高上限范围
-        for maxRange in rangeAreaArray {
+        for maxRange in targetRange {
             let upper_limit = (maxRange["left_closed"] as! NSString).doubleValue
             if yAxis.leftAxis_ValueMax > upper_limit {
                 break
             } else {
-                rangeAreaArray.removeFirst()
+                targetRange.removeFirst()
             }
         }
         
@@ -246,15 +246,15 @@ open class YAxisRenderer: AxisRendererBase
         let pixel_ZeroPoint = CGPoint(x: viewPortHandler.contentLeft, y: viewPortHandler.contentTop)// 顶点 0 点 的实际坐标
         let pixel_MaxPoint = CGPoint(x: viewPortHandler.contentLeft, y: viewPortHandler.contentBottom)// 最底边 的实际坐标
 
-        for index in 0..<rangeAreaArray.count {
+        for index in 0..<targetRange.count {
             
             var lastIndex = index - 1; if lastIndex == -1 { lastIndex = 0 }
-            let lase_closeValue = (rangeAreaArray[lastIndex]["left_closed"] as! NSString).doubleValue
+            let lase_closeValue = (targetRange[lastIndex]["left_closed"] as! NSString).doubleValue
             
-            let closeValue = (rangeAreaArray[index]["left_closed"] as! NSString).doubleValue
-            let closeAreaName = rangeAreaArray[index]["areaName"] as! String
+            let closeValue = (targetRange[index]["left_closed"] as! NSString).doubleValue
+            let closeAreaName = targetRange[index]["areaName"] as! String
             
-            let color = rangeAreaArray[index]["colorIndex"] as! String
+            let color = targetRange[index]["colorIndex"] as! String
             let colorIndex = Int(color)!
 
             // 分界点 左闭右开 ::: 20 ====> [20,+）
@@ -265,7 +265,7 @@ open class YAxisRenderer: AxisRendererBase
                 pixel_lastPoint = pixel_ZeroPoint
             }
             
-            if index == (rangeAreaArray.count - 1) {
+            if index == (targetRange.count - 1) {
                 pixel_Point = pixel_MaxPoint
             }
             
