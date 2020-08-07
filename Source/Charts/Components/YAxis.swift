@@ -58,7 +58,7 @@ open class YAxis: AxisBase
     @objc open var drawRiskLeveAreaEnabled = false
     
     /// Draw the risk level ranges and level name
-    @objc open var riskLeveAreaArray = [NSDictionary]()
+    @objc open var riskLevelAreaArray = [NSDictionary]()
     
     /// Y-max of provided data
     @objc open var leftAxis_ValueMax = 0.0

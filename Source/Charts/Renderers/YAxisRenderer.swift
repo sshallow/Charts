@@ -220,7 +220,7 @@ open class YAxisRenderer: AxisRendererBase
         var targetRange = [NSDictionary]()//数据落到的目标范围
         
         //找出最低下限范围
-        for minRange in yAxis.riskLeveAreaArray {
+        for minRange in yAxis.riskLevelAreaArray {
             let lower_limit = (minRange["left_closed"] as! NSString).doubleValue
             if yAxis.leftAxis_ValueMin >= lower_limit {
                 targetRange.append(minRange)
