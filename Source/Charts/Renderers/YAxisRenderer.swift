@@ -169,11 +169,6 @@ open class YAxisRenderer: AxisRendererBase
             return
         }
         
-        if yAxis.drawRiskLeveAreaEnabled {
-            // draw RiskLeveArea
-            drawRiskLeveArea(context: context)
-        }
-        
         if yAxis.drawGridLinesEnabled
         {
             let positions = transformedPositions()
@@ -205,6 +200,11 @@ open class YAxisRenderer: AxisRendererBase
         {
             // draw zero line
             drawZeroLine(context: context)
+        }
+        
+        if yAxis.drawRiskLeveAreaEnabled {//为了画完系统的再画分区，防止遮盖
+            // draw RiskLeveArea
+            drawRiskLeveArea(context: context)
         }
     }
     
