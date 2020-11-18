@@ -286,9 +286,9 @@ open class YAxisRenderer: AxisRendererBase
         context.addRect(rect)
         context.drawPath(using: .fill)
         
-        drawRotatedText(string, at: CGPoint(x: viewPortHandler.contentRight * 0.2, y: rect.origin.y + rect.size.height / 2.0), angle: -30, font: UIFont(name: "HelveticaNeue-Bold", size: 14)!, color: colorByHex(rgbHexValue: 0x000000, alpha: 0.14))
-        drawRotatedText(string, at: CGPoint(x: viewPortHandler.contentRight / 2.0, y: rect.origin.y + rect.size.height / 2.0), angle: -30, font: UIFont(name: "HelveticaNeue-Bold", size: 14)!, color: colorByHex(rgbHexValue: 0x000000, alpha: 0.14))
-        drawRotatedText(string, at: CGPoint(x: viewPortHandler.contentRight * 0.8, y: rect.origin.y + rect.size.height / 2.0), angle: -30, font: UIFont(name: "HelveticaNeue-Bold", size: 14)!, color: colorByHex(rgbHexValue: 0x000000, alpha: 0.14))
+        drawRotatedText(string, at: CGPoint(x: viewPortHandler.contentRight * 0.2, y: rect.origin.y + rect.size.height / 2.0), angle: -30, font: UIFont(name: "HelveticaNeue-Bold", size: 14)!, color: colorByHex(rgbHexValue: 0x000000, alpha: 0.24))
+        drawRotatedText(string, at: CGPoint(x: viewPortHandler.contentRight / 2.0, y: rect.origin.y + rect.size.height / 2.0), angle: -30, font: UIFont(name: "HelveticaNeue-Bold", size: 14)!, color: colorByHex(rgbHexValue: 0x000000, alpha: 0.24))
+        drawRotatedText(string, at: CGPoint(x: viewPortHandler.contentRight * 0.8, y: rect.origin.y + rect.size.height / 2.0), angle: -30, font: UIFont(name: "HelveticaNeue-Bold", size: 14)!, color: colorByHex(rgbHexValue: 0x000000, alpha: 0.24))
     }
     
     // hex color
