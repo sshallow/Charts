@@ -281,7 +281,7 @@ open class YAxisRenderer: AxisRendererBase
     
     // draw unit risklevel
     func drawUnitRiskAreaWithRect(context: CGContext, rect : CGRect, string: String, rgbHexValue:UInt32) {
-        let color = colorByHex(rgbHexValue: rgbHexValue, alpha: 0.4);
+        let color = colorByHex(rgbHexValue: rgbHexValue, alpha: 0.24);
         context.setFillColor(color.cgColor)
         context.addRect(rect)
         context.drawPath(using: .fill)
