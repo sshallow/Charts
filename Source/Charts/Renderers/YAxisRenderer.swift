@@ -208,6 +208,9 @@ open class YAxisRenderer: AxisRendererBase
         }
     }
     
+    /// 优化分区绘制文字时的 文字 区数
+    var totalAreaCount = 0
+    
     /// Draws the RiskLeveArea.
     @objc open func drawRiskLeveArea(context: CGContext)
     {
@@ -240,6 +243,8 @@ open class YAxisRenderer: AxisRendererBase
             }
         }
         
+        totalAreaCount = targetRange.count
+        
         //颜色数组
         let colors = [0x2ECC71,0x3498DB,0xFFDD26,0xE67E22,0xCE2029]
 
@@ -269,26 +274,28 @@ open class YAxisRenderer: AxisRendererBase
                 pixel_Point = pixel_MaxPoint
             }
             
-            drawRiskArea_LevelCustom(context: context, y: pixel_lastPoint.y, height: pixel_Point.y - pixel_lastPoint.y, string: closeAreaName, rgbHexValue: UInt32(colors[colorIndex]))
+            drawRiskArea_LevelCustom(context: context, y: pixel_lastPoint.y, height: pixel_Point.y - pixel_lastPoint.y, string: closeAreaName, rgbHexValue: UInt32(colors[colorIndex]), forIn_index: Int(index))
         }
     }
     
     // draw Custom  risk level area
-    func drawRiskArea_LevelCustom(context: CGContext, y : CGFloat, height : CGFloat, string: String, rgbHexValue:UInt32) {
+    func drawRiskArea_LevelCustom(context: CGContext, y : CGFloat, height : CGFloat, string: String, rgbHexValue: UInt32, forIn_index: Int) {
         let rect = CGRect(x: viewPortHandler.contentLeft, y: y, width: viewPortHandler.contentRight - viewPortHandler.contentLeft, height: height)
-        drawUnitRiskAreaWithRect(context: context, rect: rect, string: string, rgbHexValue: rgbHexValue)
+        drawUnitRiskAreaWithRect(context: context, rect: rect, string: string, rgbHexValue: rgbHexValue, forIn_index: forIn_index)
     }
     
     // draw unit risklevel
-    func drawUnitRiskAreaWithRect(context: CGContext, rect : CGRect, string: String, rgbHexValue:UInt32) {
+    func drawUnitRiskAreaWithRect(context: CGContext, rect : CGRect, string: String, rgbHexValue:UInt32, forIn_index: Int) {
         let color = colorByHex(rgbHexValue: rgbHexValue, alpha: 0.24);
         context.setFillColor(color.cgColor)
         context.addRect(rect)
         context.drawPath(using: .fill)
         
-        drawRotatedText(string, at: CGPoint(x: viewPortHandler.contentRight * 0.2, y: rect.origin.y + rect.size.height / 2.0), angle: -30, font: UIFont(name: "HelveticaNeue-Bold", size: 14)!, color: colorByHex(rgbHexValue: 0x000000, alpha: 0.24))
-        drawRotatedText(string, at: CGPoint(x: viewPortHandler.contentRight / 2.0, y: rect.origin.y + rect.size.height / 2.0), angle: -30, font: UIFont(name: "HelveticaNeue-Bold", size: 14)!, color: colorByHex(rgbHexValue: 0x000000, alpha: 0.24))
-        drawRotatedText(string, at: CGPoint(x: viewPortHandler.contentRight * 0.8, y: rect.origin.y + rect.size.height / 2.0), angle: -30, font: UIFont(name: "HelveticaNeue-Bold", size: 14)!, color: colorByHex(rgbHexValue: 0x000000, alpha: 0.24))
+        //优化绘制文字的 x 起点坐标 (多个区/列), 相当于 position
+        let x = viewPortHandler.contentLeft + CGFloat(forIn_index) * (rect.size.width / CGFloat(totalAreaCount)) + (rect.size.width / CGFloat(2*totalAreaCount))
+
+        // 2021-01-13 change: 取消旋转
+        drawRotatedText(string, at: CGPoint(x: x, y: rect.origin.y + rect.size.height / 2.0), angle: 0, font: UIFont(name: "HelveticaNeue-Bold", size: 14)!, color: colorByHex(rgbHexValue: 0x000000, alpha: 0.24), translateOriginX: x)
     }
     
     // hex color
@@ -301,15 +308,18 @@ open class YAxisRenderer: AxisRendererBase
     }
     
     // draw Rotated Text
-    func drawRotatedText(_ text: String, at p: CGPoint, angle: CGFloat, font: UIFont, color: UIColor) {
+    func drawRotatedText(_ text: String, at p: CGPoint, angle: CGFloat, font: UIFont, color: UIColor, translateOriginX: CGFloat) {
         // Draw text centered on the point, rotated by an angle in degrees moving clockwise.
         let attrs = [NSAttributedString.Key.font: font, NSAttributedString.Key.foregroundColor: color]
         let textSize = text.size(withAttributes: attrs)
         let c = UIGraphicsGetCurrentContext()!
         c.saveGState()
         // Translate the origin to the drawing location and rotate the coordinate system.
-        c.translateBy(x: p.x, y: p.y)
+        c.translateBy(x: translateOriginX, y: p.y)
         c.rotate(by: angle * .pi / 180)
+        // 绘制的坐标,相当于 translateOriginX, y
+        let drawX = -(textSize.width / 2)
+        let drawY = -(textSize.height / 2)
         // Draw the text centered at the point.
         text.draw(at: CGPoint(x: -textSize.width / 2, y: -textSize.height / 2), withAttributes: attrs)
         // Restore the original coordinate system.
