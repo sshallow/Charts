@@ -87,6 +87,12 @@ open class PieChartDataSet: ChartDataSet, IPieChartDataSet
     /// When valuePosition is OutsideSlice and enabled, line will have the same color as the slice
     open var useValueColorForLine: Bool = false
 
+    /// `true`  valueText(Y-Value) will have the same color as the slice, `false` ifnot
+    open var useSliceColorForValue: Bool = false
+    
+    /// `true`  entryLabel(X-Value) will have the same color as the slice, `false` ifnot
+    open var useSliceColorForEntry: Bool = false
+    
     /// When valuePosition is OutsideSlice, indicates line width
     open var valueLineWidth: CGFloat = 1.0
 

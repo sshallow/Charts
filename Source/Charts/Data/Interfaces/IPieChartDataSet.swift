@@ -37,6 +37,12 @@ public protocol IPieChartDataSet: IChartDataSet
     /// When valuePosition is OutsideSlice and enabled, line will have the same color as the slice
     var useValueColorForLine: Bool { get set }
 
+    /// `true`  valueText(Y-Value) will have the same color as the slice, `false` ifnot
+    var useSliceColorForValue: Bool { get set }
+
+    /// `true`  entryLabel(X-Value) will have the same color as the slice, `false` ifnot
+    var useSliceColorForEntry: Bool { get set }
+    
     /// When valuePosition is OutsideSlice, indicates line width
     var valueLineWidth: CGFloat { get set }
 

@@ -396,8 +396,8 @@ open class PieChartRenderer: DataRenderer
                 let drawXInside = drawEntryLabels && xValuePosition == .insideSlice
                 let drawYInside = drawValues && yValuePosition == .insideSlice
 
-                let valueTextColor = dataSet.color(atIndex: j)
-                let entryLabelColor = dataSet.entryLabelColor ?? chart.entryLabelColor
+                let valueTextColor = dataSet.useSliceColorForValue ? dataSet.color(atIndex: j) : dataSet.valueTextColorAt(j)
+                let entryLabelColor = dataSet.useSliceColorForEntry ? dataSet.color(atIndex: j) : dataSet.entryLabelColor ?? chart.entryLabelColor
 
                 if drawXOutside || drawYOutside
                 {
